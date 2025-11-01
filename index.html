@@ -1,331 +1,156 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>A Estática dos Sólidos — Trabalho</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Galindo&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Placar Just Dance - Lele</title>
   <style>
-    * {
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #111, #222);
+      color: #fff;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: "Nunito", sans-serif;
-      font-size: 15px;
-      color: #ff9898;
+      text-align: center;
     }
-
-    body {
-      background-image: linear-gradient(45deg, #7f2f2f, #b62e2e);
-      line-height: 1.6;
-    }
-
     header {
-      text-align: center;
-      padding: 60px 20px 40px;
-      background: rgba(0,0,0,0.25);
-    }
-
-    header h1 {
-      font-size: 2.64rem;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      font-family: "Galindo", sans-serif;
-    }
-
-    header .subtitulo, 
-    header .autor-list,
-    header .ident {
-      margin: 6px 0;
-      font-size: 0.90rem;
-    }
-
-    nav.toc {
-      background: rgba(255,255,255,0.1);
+      background: #ff4f8b;
       padding: 20px;
-      margin: 20px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px #000;
+    }
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #444;
+    }
+    th {
+      background: #333;
+      color: #ffb6d9;
+      cursor: pointer;
+    }
+    tr:nth-child(even) {
+      background: #1c1c1c;
+    }
+    tr:hover {
+      background: #2a2a2a;
+    }
+    select, input {
+      padding: 8px 12px;
       border-radius: 8px;
+      border: none;
+      background: #ff4f8b;
+      color: white;
+      font-weight: bold;
+      margin: 5px;
     }
-
-    nav.toc h3 {
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-      color: #ffd6d6;
-    }
-
-    nav.toc ol {
-      list-style: decimal;
-      padding-left: 20px;
-    }
-
-    nav.toc a {
+    input {
+      background: #333;
       color: #fff;
-      text-decoration: none;
-      transition: 0.3s;
+      border: 1px solid #555;
     }
-
-    nav.toc a:hover {
-      color: #ffaaaa;
-    }
-
-    main {
-      padding: 40px 20px;
-    }
-
-    h2 {
-      margin-top: 40px;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
-      color: #ffd6d6;
-    }
-
-    h3 {
-      margin-top: 20px;
-      margin-bottom: 8px;
-      font-size: 1.2rem;
-      color: #ffe6e6;
-    }
-
-    p {
-      margin-bottom: 12px;
-      text-align: justify;
-      color: rgb(255, 178, 178);
-    }
-
-    ul {
-      margin: 10px 0 10px 25px;
-    }
-
-    .equation {
-      font-family: "Courier New", monospace;
-      background: rgba(255,255,255,0.1);
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-block;
-    }
-
     footer {
-      text-align: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.25);
       margin-top: 40px;
+      padding: 10px;
       font-size: 0.9rem;
-    }
-
-    .center {
-      background-color: #ff88007f;
-      padding: 20px 40px;
-      font-family: "DM Serif Text", serif;
-      font-size: 25px;
-      border-radius: 20px 70px;
-    }
-
-    a {
-      color: #7b61ff
-    }
-
-    #lele {
-      text-align: right;
-      font-size: 25x;
-      color: rgb(193, 125, 233);
-    }
-
-    #subtitulo {
-      font-size: 10px;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
+  <header>🎵 Placar Just Dance do Lele 🎵</header>
+  <div>
+    <label>Filtrar por estrelas mínimas:</label>
+    <select id="filtroEstrelas">
+      <option value="0">Todas</option>
+      <option value="3">3+</option>
+      <option value="4">4+</option>
+      <option value="5">5</option>
+    </select>
+    <label>Buscar música:</label>
+    <input type="text" id="buscarMusica" placeholder="Digite o nome...">
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th id="ordenarPontuacao">Música ⬍</th>
+        <th>Versão</th>
+        <th>Pontuação</th>
+        <th>Estrelas</th>
+        <th>Jogo</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaPontuacao">
+      <tr><td colspan="5">Carregando dados...</td></tr>
+    </tbody>
+  </table>
 
-  <footer>
-    <div class="center">Escola Estadual Walfredo Arantes Caldas — Trabalho de Física — 3° bimestre</div>
-  </footer>
+  <footer>Atualiza automaticamente com base na planilha do Lele 💃</footer>
 
-  <header>
-    <h1>A ESTÁTICA DOS SÓLIDOS</h1>
-    <div class="subtitulo">
-Trabalho apresentado à Escola Estadual Walfredo Arantes Caldas, como parte das atividades avaliativas da disciplina de Física, sob orientação do professor Willi, referente à conclusão do 3° bimestre da turma do 1° ano I  
-</div>
-    <div class="autor-list">
-      <strong>Autores:</strong><br/>
-      NICOLAS MATHEUS, GEOVANNA LIMA, ALANA, RAFAELA, ANNA BEATRIZ, ALEXSSANDRO(HTML) E STHEFFANY
-    </div>
-    <div class="ident">São Paulo, SP — 2025</div>
-  </header>
+  <script>
+    const planilhaURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?output=csv&gid=0';
 
-  <nav class="toc" aria-label="Sumário">
-    <h3>Sumário</h3>
-    <ol>
-      <li><a href="#intro">1. Introdução</a></li>
-      <li><a href="#desenvolvimento">2. Desenvolvimento
-        <ol>
-          <li><a href="#torque1">2.1 Torque</a></li>
-          <li><a href="#alavanca">2.2 Alavanca</a></li>
-          <li><a href="#torque2">2.3 Torque (repetição)</a></li>
-          <li><a href="#translacao">2.4 Translação</a></li>
-          <li><a href="#rotacao">2.5 Rotação</a></li>
-        </ol>
-      </a></li>
-      <li><a href="#referencias">3. Referências Bibliográficas</a></li>
-      <li><a href="#conclusao">4. Conclusão</a></li>
-    </ol>
-  </nav>
+    let dadosGlobais = [];
 
-  <main>
-    <section id="intro">
-      <h2>1. INTRODUÇÃO</h2>
-      <p>
-        A estática é um dos ramos da física que estuda sistemas em equilíbrio, ou seja, em repouso. Ela analisa cenários
-        e as condições necessárias para um corpo permanecer em equilíbrio, estável, mesmo sob a ação de forças externas.
-      </p>
-      <p>
-        O termo “Estática” vem do grego “Statikós”, que significa “equilíbrio” ou “estabilidade”.
-      </p>
-      <p>
-        O conceito de Estática é essencial em diversas áreas, como a arquitetura ou a engenharia, e se demonstra peça
-        chave para resoluções de problemas de funcionamento em construções como edifícios, pontes, guindastes e, até
-        mesmo, se aplica no próprio corpo humano.
-      </p>
-      <p>
-        A Estática foca no equilíbrio mecânico, abrangendo o estudo de materiais em dois estados principais: corpos rígidos
-        (sólidos) e fluidos (gases ou líquidos).
-      </p>
-      <p>
-        Quando se conhecem as condições de equilíbrio, o centro de massa e as forças de apoio de um corpo, ele pode ser
-        considerado estável e seguro.
-      </p>
-      <p>
-        Na prática, usando esses conceitos e aplicando-os corretamente em superfícies e volumes, engenheiros e arquitetos
-        conseguem projetar pontes, prédios e outros objetos de forma confiável, garantindo estabilidade e segurança para
-        todos que utilizam essas construções.
-      </p>
-    </section>
+    async function carregarPlanilha() {
+      const res = await fetch(planilhaURL);
+      const texto = await res.text();
+      const linhas = texto.split('\n').map(l => l.split(','));
+      const cabecalho = linhas.shift();
 
-    <section id="desenvolvimento">
-      <h2>2. DESENVOLVIMENTO</h2>
+      const dados = linhas.map(linha => {
+        const obj = {};
+        cabecalho.forEach((col, i) => obj[col.trim()] = linha[i]?.trim());
+        return obj;
+      }).filter(d => d['Música']);
 
-      <section id="torque1">
-        <h3>2.1 Torque</h3>
-        <p>
-          Torque: chamado de momento de força, é uma grandeza física que ocorre quando aplicamos uma força sobre um corpo,
-          capaz de rotacionar e girar.
-        </p>
-        <p>
-          <strong>Fórmula do Torque</strong>
-          <br/>
-          <span class="equation">T = r • F • θ</span>
-        </p>
-        <p>
-          <strong>Definições:</strong><br/>
-          T: é o torque produzido, medido em (N·m).<br/>
-          r: é a distância do eixo de rotação também chamado de braço de alavanca, medida em metros.<br/>
-          F: é a força aplicada, medida em Newton [N].<br/>
-          θ: é o ângulo entre distância e a força, medido em graus (ou radianos conforme o uso).
-        </p>
-        <p>
-          O torque não depende só da força, mas também da distância ao eixo de rotação; por isso aumentar o braço de
-          alavanca facilita a aplicação da força.
-        </p>
-      </section>
+      dadosGlobais = dados;
+      atualizarTabela();
+    }
 
-      <section id="alavanca">
-        <h3>2.2 Alavanca</h3>
-        <p>
-          Alavanca: é uma máquina capaz de simplificar a execução de uma tarefa, podendo ser interfixa, interpotente e
-          inter-resistente.
-        </p>
-        <p>
-          <strong>Tipos:</strong>
-          <ul>
-            <li><strong>Interfixa:</strong> ponto de apoio entre a força potente e a força resistente — ex.: tesoura, gangorra.</li>
-            <li><strong>Inter-resistente:</strong> a força resistente entre a força potente e o ponto de apoio — ex.: abridor de garrafas, carrinho de mão.</li>
-            <li><strong>Interpotente:</strong> a força potente entre a força resistente e o ponto de apoio — ex.: pinça, cortador de unhas.</li>
-          </ul>
-        </p>
-        <p>
-          <strong>Fórmula da alavanca</strong><br/>
-          <span class="equation">F<sub>p</sub> · d<sub>p</sub> = F<sub>r</sub> · d<sub>r</sub></span>
-        </p>
-        <p>
-          Onde F<sub>p</sub> é a força potente (N), d<sub>p</sub> a distância da força potente (m), F<sub>r</sub> a força resistente (N) e d<sub>r</sub> a distância da força resistente (m).
-        </p>
-      </section>
+    function atualizarTabela() {
+      const corpo = document.getElementById('tabelaPontuacao');
+      const filtro = parseInt(document.getElementById('filtroEstrelas').value, 10);
+      const busca = document.getElementById('buscarMusica').value.toLowerCase();
 
-      <section id="torque2">
-        <h3>2.3 Torque</h3>
-        <p>
-          (Repetição/ênfase) Chamado de momento de força, é uma grandeza física que ocorre quando aplicamos uma força sobre um corpo, capaz de rotacionar.
-        </p>
-        <p>
-          <strong>Fórmula do torque</strong><br/>
-          <span class="equation">T = r · F · θ</span>
-        </p>
-        <p>
-          T é o torque produzido, medido em N·m.
-        </p>
-      </section>
+      const filtrados = dadosGlobais.filter(d => {
+        const estrelas = parseInt(d['Estrelas'] || 0, 10);
+        const nome = (d['Música'] || '').toLowerCase();
+        return estrelas >= filtro && nome.includes(busca);
+      });
 
-      <section id="translacao">
-        <h3>2.4 Translação</h3>
-        <p>
-          A translação é o movimento de um corpo em relação a um referencial inercial (um local parado, ou em movimento
-          constante uniforme). Quando o movimento de translação está ausente, o corpo não apresenta aceleração em relação
-          ao referencial.
-        </p>
-        <p>
-          Para garantir a ausência de ambas categorias de movimento (translação e rotação), a soma vetorial das forças
-          aplicadas ao corpo deve ser igual a zero.
-        </p>
-        <p>
-          Em fórmula (vetorial): <span class="equation">∑F = 0</span>.
-        </p>
-      </section>
+      corpo.innerHTML = '';
 
-      <section id="rotacao">
-        <h3>2.5 Rotação</h3>
-        <p>
-          Os movimentos de rotação são caracterizados pelo giro de um corpo em torno de um ponto ou eixo de referência.
-          Também chamados de torque (T) ou momento angular (M), a condição de equilíbrio estático exige que a soma dos
-          torques seja igual a zero.
-        </p>
-        <p>
-          Em fórmula (momento/torque): <span class="equation">∑T = 0</span>.
-        </p>
-      </section>
+      if (filtrados.length === 0) {
+        corpo.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>';
+        return;
+      }
 
-    </section>
+      filtrados.sort((a,b) => parseInt(b['Pontuação']||0) - parseInt(a['Pontuação']||0));
 
-    <section id="referencias">
-      <h2>3. REFERÊNCIAS BIBLIOGRÁFICAS</h2>
-      <p>
-        <a href="https://www.todamateria.com.br/estatica-entenda-o-que-e-e-as-formulas/" target="_blank" rel="noopener">https://www.todamateria.com.br/estatica-entenda-o-que-e-e-as-formulas/</a>
-      </p>
-    </section>
+      filtrados.forEach(dado => {
+        const tr = document.createElement('tr');
+        ['Música', 'Versão', 'Pontuação', 'Estrelas', 'Jogo'].forEach(col => {
+          const td = document.createElement('td');
+          td.textContent = dado[col] || '-';
+          tr.appendChild(td);
+        });
+        corpo.appendChild(tr);
+      });
+    }
 
-    <section id="conclusao">
-      <h2>4. CONCLUSÃO</h2>
-      <p>
-        O presente trabalho teve como objetivo compreender a estática dos objetos, área da Física que estuda o comportamento de corpos.
-        Nela, analisamos os motivos que fazem com que um corpo ou sistema permaneça em equilíbrio, mesmo quando sofre a ação de forças externas.
-      </p>
-      <p>
-        Para que isso aconteça, é necessário que a soma das forças e dos momentos seja igual a zero, impedindo que o corpo se desloque ou gire,
-        o que ajuda a explicar muitos fenômenos presentes no dia a dia.
-      </p>
-      <p>
-        Em geral, os resultados deste estudo possibilitaram uma melhor compreensão dos princípios da estática e da sua importância para o equilíbrio dos corpos.
-        Ficou evidente que a interação entre forças e momentos garante o estado de repouso, mostrando que o tema vai além da teoria e possui aplicações práticas em
-        áreas como engenharia, arquitetura e até em situações cotidianas.
-      </p>
-      <p>
-        Em resumo, essa parte da mecânica investiga como os materiais reagem quando submetidos a forças e tensões. Embora o movimento também possa ser considerado,
-        a ideia principal é que o corpo sólido mantenha sua forma e estabilidade.
-      </p>
-    </section>
-  </main>
-  <p id="lele">Espero que tenham gostado : 3</p>
+    document.getElementById('filtroEstrelas').addEventListener('change', atualizarTabela);
+    document.getElementById('buscarMusica').addEventListener('input', atualizarTabela);
 
+    carregarPlanilha();
+    setInterval(carregarPlanilha, 60000);
+  </script>
 </body>
-        </html>
+</html>
