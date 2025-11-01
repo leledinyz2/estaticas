@@ -94,63 +94,6 @@
 
   <footer>Atualiza automaticamente com base na planilha do Lele 💃</footer>
 
-  <script>
-    const planilhaURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?output=csv&gid=0';
-
-    let dadosGlobais = [];
-
-    async function carregarPlanilha() {
-      const res = await fetch(planilhaURL);
-      const texto = await res.text();
-      const linhas = texto.split('\n').map(l => l.split(','));
-      const cabecalho = linhas.shift();
-
-      const dados = linhas.map(linha => {
-        const obj = {};
-        cabecalho.forEach((col, i) => obj[col.trim()] = linha[i]?.trim());
-        return obj;
-      }).filter(d => d['Música']);
-
-      dadosGlobais = dados;
-      atualizarTabela();
-    }
-
-    function atualizarTabela() {
-      const corpo = document.getElementById('tabelaPontuacao');
-      const filtro = parseInt(document.getElementById('filtroEstrelas').value, 10);
-      const busca = document.getElementById('buscarMusica').value.toLowerCase();
-
-      const filtrados = dadosGlobais.filter(d => {
-        const estrelas = parseInt(d['Estrelas'] || 0, 10);
-        const nome = (d['Música'] || '').toLowerCase();
-        return estrelas >= filtro && nome.includes(busca);
-      });
-
-      corpo.innerHTML = '';
-
-      if (filtrados.length === 0) {
-        corpo.innerHTML = '<tr><td colspan="5">Nenhum resultado encontrado</td></tr>';
-        return;
-      }
-
-      filtrados.sort((a,b) => parseInt(b['Pontuação']||0) - parseInt(a['Pontuação']||0));
-
-      filtrados.forEach(dado => {
-        const tr = document.createElement('tr');
-        ['Música', 'Versão', 'Pontuação', 'Estrelas', 'Jogo'].forEach(col => {
-          const td = document.createElement('td');
-          td.textContent = dado[col] || '-';
-          tr.appendChild(td);
-        });
-        corpo.appendChild(tr);
-      });
-    }
-
-    document.getElementById('filtroEstrelas').addEventListener('change', atualizarTabela);
-    document.getElementById('buscarMusica').addEventListener('input', atualizarTabela);
-
-    carregarPlanilha();
-    setInterval(carregarPlanilha, 60000);
-  </script>
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
 </body>
 </html>
