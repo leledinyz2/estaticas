@@ -1,100 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>🎵 Placar Just Dance do Lele 🎵</title>
-
 <style>
-body {
-  font-family: "Poppins", sans-serif;
-  background: #0d0d0d;
-  color: #f4f4f4;
-  margin: 0;
-}
-header {
-  background: #b30a3c;
-  text-align: center;
-  padding: 20px;
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: white;
-  border-radius: 0 0 10px 10px;
-}
-.container {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #111;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(255,255,255,0.05);
-  overflow-x: auto;
-}
-.controls {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-select, input {
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: 1px solid #444;
-  background: #222;
-  color: #fff;
-  font-size: 0.9rem;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  table-layout: fixed;
-  word-wrap: break-word;
-}
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #333;
-  text-align: left;
-}
-th {
-  color: #ff88b3;
-  cursor: pointer;
-}
-tr:hover {
-  background: #1b1b1b;
-}
-footer {
-  text-align: center;
-  color: #999;
-  margin-top: 20px;
-  font-size: 0.85rem;
-}
+  body { font-family: "Poppins", sans-serif; background:#0d0d0d; color:#f4f4f4; margin:0 }
+  header { background:#b30a3c; text-align:center; padding:20px; font-size:1.6rem; font-weight:600; color:#fff; border-radius:0 0 10px 10px; }
+  .container { max-width:980px; margin:30px auto; padding:20px; background:#111; border-radius:10px; box-shadow:0 4px 20px rgba(255,255,255,0.04); overflow-x:auto; }
+  .controls { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px; align-items:center; }
+  label { font-size:0.9rem; color:#ddd }
+  select,input { padding:8px 10px; border-radius:6px; border:1px solid #333; background:#161616; color:#fff }
+  table { width:100%; border-collapse:collapse; margin-top:12px; table-layout:fixed; word-wrap:break-word; }
+  th,td { padding:10px; border-bottom:1px solid #222; text-align:left; vertical-align:middle }
+  th { color:#ff88b3; font-weight:600 }
+  tr:hover { background:#1a1a1a }
+  footer { text-align:center; color:#999; margin-top:16px; font-size:0.9rem }
+  .small { font-size:0.85rem; color:#aaa; margin-left:8px }
 </style>
 </head>
 <body>
-
 <header>🎵 Placar Just Dance do Lele 🎵</header>
 
 <div class="container">
   <div class="controls">
     <div>
-      <label>Filtrar por estrelas mínimas:</label>
-      <select id="filtroEstrelas">
-        <option value="0">Todas</option>
-        <option value="1">1+</option>
-        <option value="2">2+</option>
-        <option value="3">3+</option>
-        <option value="4">4+</option>
-        <option value="5">5</option>
-      </select>
+      <label>Filtro por estrelas mínimas:</label><br>
+      <select id="filtroEstrelas"><option value="0">Todas</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option><option value="5">5</option></select>
     </div>
-    <div>
-      <label>Buscar música:</label>
-      <input type="text" id="buscaMusica" placeholder="Digite o nome...">
+    <div style="flex:1">
+      <label>Buscar música:</label><br>
+      <input id="buscaMusica" type="text" placeholder="Digite o nome..." style="width:100%"/>
     </div>
   </div>
 
-  <table id="tabela">
+  <div class="small" id="detectedHeaders"></div>
+
+  <table id="tabela" aria-live="polite">
     <thead>
       <tr>
         <th>Música</th>
@@ -111,62 +53,12 @@ footer {
 </div>
 
 <script>
+/* URL pública do CSV (o seu link no formato /pub?output=csv) */
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?gid=0&single=true&output=csv";
 
-async function carregarDados() {
-  const res = await fetch(CSV_URL);
-  const text = await res.text();
-  const linhas = text.split("\n").map(l => l.split(","));
-  const cabecalho = linhas[0];
-  const dados = linhas.slice(1).map(linha => {
-    const obj = {};
-    cabecalho.forEach((col, i) => {
-      let val = (linha[i] || "").replace(/['"]+/g, '').replace(/\r?\n/g, ' ').trim();
-      obj[col.trim()] = val;
-    });
-    return obj;
-  });
-  return dados.filter(d => d["Música"]);
-}
-
-function exibirTabela(dados) {
-  const corpo = document.querySelector("#tabela tbody");
-  corpo.innerHTML = "";
-  dados.forEach(d => {
-    const estrelasNum = Math.min(parseInt(d.Estrelas || "0"), 5);
-    const estrelasHTML = "💛".repeat(estrelasNum);
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${d["Música"] || ""}</td>
-      <td>${d["Versão"] || ""}</td>
-      <td>${d["Pontuação"] || ""}</td>
-      <td>${estrelasHTML}</td>
-      <td>${d["Jogo"] || ""}</td>
-    `;
-    corpo.appendChild(tr);
-  });
-}
-
-function aplicarFiltros() {
-  const minEstrelas = parseInt(document.querySelector("#filtroEstrelas").value);
-  const busca = document.querySelector("#buscaMusica").value.toLowerCase();
-  const filtrado = todos.filter(d => {
-    const e = parseInt(d.Estrelas || "0");
-    const nome = (d["Música"] || "").toLowerCase();
-    return e >= minEstrelas && nome.includes(busca);
-  });
-  exibirTabela(filtrado);
-}
-
-let todos = [];
-carregarDados().then(dados => {
-  todos = dados;
-  exibirTabela(dados);
-});
-
-document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
-document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
-</script>
-
-</body>
-</html>
+/* --- Parser CSV robusto (suporta aspas, vírgulas internas e quebras de linha dentro de campos) --- */
+function parseCSV(text) {
+  const rows = [];
+  let i = 0, cur = '', row = [], inQuotes = false;
+  while (i < text.length) {
+    c
