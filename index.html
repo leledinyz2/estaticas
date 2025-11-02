@@ -1,99 +1,177 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Placar Just Dance - Lele</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(180deg, #111, #222);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #ff4f8b;
-      padding: 20px;
-      font-size: 1.8rem;
-      font-weight: bold;
-      text-shadow: 1px 1px 4px #000;
-    }
-    table {
-      width: 90%;
-      margin: 20px auto;
-      border-collapse: collapse;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #444;
-    }
-    th {
-      background: #333;
-      color: #ffb6d9;
-      cursor: pointer;
-    }
-    tr:nth-child(even) {
-      background: #1c1c1c;
-    }
-    tr:hover {
-      background: #2a2a2a;
-    }
-    select, input {
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: none;
-      background: #ff4f8b;
-      color: white;
-      font-weight: bold;
-      margin: 5px;
-    }
-    input {
-      background: #333;
-      color: #fff;
-      border: 1px solid #555;
-    }
-    footer {
-      margin-top: 40px;
-      padding: 10px;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Placar Just Dance do Lele 🎵</title>
+
+<style>
+body {
+  font-family: "Poppins", sans-serif;
+  background: #0d0d0d;
+  color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background: #b30a3c;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: white;
+  border-radius: 0 0 10px 10px;
+}
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #111;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(255,255,255,0.05);
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+select, input {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background: #222;
+  color: #fff;
+  font-size: 0.9rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+th {
+  color: #ff88b3;
+  cursor: pointer;
+}
+tr:hover {
+  background: #1b1b1b;
+}
+footer {
+  text-align: center;
+  color: #999;
+  margin-top: 20px;
+  font-size: 0.85rem;
+}
+.estrela {
+  color: #ffcc00;
+}
+</style>
 </head>
 <body>
-  <header>🎵 Placar Just Dance do Lele 🎵</header>
-  <div>
-    <label>Filtrar por estrelas mínimas:</label>
-    <select id="filtroEstrelas">
-      <option value="0">Todas</option>
-      <option value="3">3+</option>
-      <option value="4">4+</option>
-      <option value="5">5</option>
-    </select>
-    <label>Buscar música:</label>
-    <input type="text" id="buscarMusica" placeholder="Digite o nome...">
+
+<header>🎵 Placar Just Dance do Lele 🎵</header>
+
+<div class="container">
+  <div class="controls">
+    <div>
+      <label>Filtrar por estrelas mínimas:</label>
+      <select id="filtroEstrelas">
+        <option value="0">Todas</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+    <div>
+      <label>Buscar música:</label>
+      <input type="text" id="buscaMusica" placeholder="Digite o nome...">
+    </div>
   </div>
-  <table>
+
+  <table id="tabela">
     <thead>
       <tr>
-        <th id="ordenarPontuacao">Música ⬍</th>
-        <th>Versão</th>
-        <th>Pontuação</th>
-        <th>Estrelas</th>
-        <th>Jogo</th>
+        <th data-col="Música">Música ⬍</th>
+        <th data-col="Versão">Versão</th>
+        <th data-col="Pontuação">Pontuação</th>
+        <th data-col="Estrelas">Estrelas</th>
+        <th data-col="Jogo">Jogo</th>
       </tr>
     </thead>
-    <tbody id="tabelaPontuacao">
-      <tr><td colspan="5">Carregando dados...</td></tr>
-    </tbody>
+    <tbody></tbody>
   </table>
 
   <footer>Atualiza automaticamente com base na planilha do Lele 💃</footer>
+</div>
 
-<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
+<script>
+// === CONFIGURAÇÃO ===
+const SHEET_ID = "1TOt_BQWDaxWpXrSaetedM65ClizLm5ptV0tohhqS03Y"; // seu ID do Sheets
+const GID = "0"; // número da aba
+const CSV_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?gid=0&single=true&output=csv`;
+
+// === FUNÇÃO PARA LER CSV ===
+async function carregarDados() {
+  const res = await fetch(CSV_URL);
+  const text = await res.text();
+  const linhas = text.split("\n").map(l => l.split(","));
+  const cabecalho = linhas[0];
+  const dados = linhas.slice(1).map(linha => {
+    const obj = {};
+    cabecalho.forEach((col, i) => obj[col.trim()] = linha[i]?.replace(/['"]+/g,'').trim());
+    return obj;
+  });
+  return dados.filter(d => d["Música"]);
+}
+
+// === GERAR TABELA ===
+function exibirTabela(dados) {
+  const corpo = document.querySelector("#tabela tbody");
+  corpo.innerHTML = "";
+  dados.forEach(d => {
+    const tr = document.createElement("tr");
+    const estrelasNum = parseInt(d.Estrelas || "0");
+    const estrelasHTML = "💛".repeat(estrelasNum);
+    tr.innerHTML = `
+      <td>"${d["Música"] || ""}"</td>
+      <td>${d["Versão"] || ""}</td>
+      <td>${d["Pontuação"] || ""}</td>
+      <td>${estrelasHTML}</td>
+      <td>${d["Jogo"] || ""}</td>
+    `;
+    corpo.appendChild(tr);
+  });
+}
+
+// === FILTROS E BUSCA ===
+function aplicarFiltros() {
+  const minEstrelas = parseInt(document.querySelector("#filtroEstrelas").value);
+  const busca = document.querySelector("#buscaMusica").value.toLowerCase();
+  const filtrado = todos.filter(d => {
+    const e = parseInt(d.Estrelas || "0");
+    const nome = (d["Música"] || "").toLowerCase();
+    return e >= minEstrelas && nome.includes(busca);
+  });
+  exibirTabela(filtrado);
+}
+
+// === INICIALIZAÇÃO ===
+let todos = [];
+carregarDados().then(dados => {
+  todos = dados;
+  exibirTabela(dados);
+});
+
+document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
+document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
+</script>
+
 </body>
 </html>
