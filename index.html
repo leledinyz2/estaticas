@@ -61,4 +61,133 @@ function parseCSV(text) {
   const rows = [];
   let i = 0, cur = '', row = [], inQuotes = false;
   while (i < text.length) {
-    c
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i+1] === '"') { cur += '"'; i += 2; continue; } // escaped quote
+        inQuotes = false; i++; continue;
+      } else {
+        cur += ch; i++; continue;
+      }
+    } else {
+      if (ch === '"') { inQuotes = true; i++; continue; }
+      if (ch === ',') { row.push(cur); cur = ''; i++; continue; }
+      if (ch === '\r') { i++; continue; }
+      if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; i++; continue; }
+      cur += ch; i++;
+    }
+  }
+  // push last
+  if (cur !== '' || row.length) row.push(cur);
+  if (row.length) rows.push(row);
+  return rows;
+}
+
+/* --- Carrega CSV e transforma em array de objetos com cabeçalho --- */
+async function carregarDados() {
+  const res = await fetch(CSV_URL);
+  if (!res.ok) throw new Error('Erro ao baixar CSV: ' + res.status);
+  const text = await res.text();
+  const parsed = parseCSV(text);
+  if (!parsed.length) return [];
+  const headers = parsed[0].map(h => (h||'').trim());
+  // monta objetos: limpa quebras internas e espaços extras
+  const dados = parsed.slice(1).map(r => {
+    const obj = {};
+    for (let i = 0; i < headers.length; i++) {
+      const raw = r[i] === undefined ? '' : r[i];
+      // remove quebras de linha internas e aspas residuais, e trim
+      obj[headers[i]] = String(raw).replace(/[\r\n]+/g, ' ').replace(/['"]+/g,'').trim();
+    }
+    return obj;
+  });
+  return { headers, dados };
+}
+
+/* --- Encontrar colunas de interesse (case-insensitive) --- */
+function detectColumns(headers) {
+  const low = headers.map(h => h.toLowerCase());
+  const find = (cands) => {
+    for (const c of cands) {
+      const idx = low.findIndex(h => h.includes(c));
+      if (idx !== -1) return headers[idx];
+    }
+    return null;
+  };
+  return {
+    musica: find(['música','musica','song','music']) || headers[0],
+    versao: find(['versão','versao','version','vers']) || headers[1] || headers[0],
+    pontuacao: find(['pontuação','pontuacao','pontu','score','pont']) || headers[2] || headers[0],
+    estrelas: find(['estrela','estrelas','stars']) || null,
+    jogo: find(['jogo','game','plataforma']) || headers[headers.length-1]
+  };
+}
+
+/* --- Render tabela --- */
+function exibirTabela(dados, cols) {
+  const tbody = document.querySelector('#tabela tbody');
+  tbody.innerHTML = '';
+  dados.forEach(d => {
+    const musica = d[cols.musica] || '';
+    const versao = d[cols.versao] || '';
+    const pontuacao = d[cols.pontuacao] || '';
+    let estrelasRaw = cols.estrelas ? (d[cols.estrelas] || '') : '';
+    // tenta extrair número de estrelas - se for grande (ex: pontuação), não exagerar: se >10, tratamos como 0
+    let eNum = parseInt((estrelasRaw || '').replace(/[^\d\-]/g,''), 10);
+    if (isNaN(eNum)) eNum = 0;
+    if (eNum > 10) eNum = Math.min(5, Math.round(eNum/1000)) || 0; // heurística: valores muito grandes provavelmente não são "estrelas"
+    eNum = Math.max(0, Math.min(5, eNum));
+    const estrelasHTML = '💛'.repeat(eNum);
+    const jogo = d[cols.jogo] || '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(musica)}</td>
+                    <td>${escapeHtml(versao)}</td>
+                    <td>${escapeHtml(pontuacao)}</td>
+                    <td>${estrelasHTML}</td>
+                    <td>${escapeHtml(jogo)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* --- filtros --- */
+function aplicarFiltros() {
+  const minE = parseInt(document.getElementById('filtroEstrelas').value, 10);
+  const q = document.getElementById('buscaMusica').value.toLowerCase();
+  const filtered = ALL_DATA.filter(d => {
+    const estrelasRaw = cols.estrelas ? (d[cols.estrelas] || '') : '';
+    let eNum = parseInt((estrelasRaw || '').replace(/[^\d\-]/g,''), 10);
+    if (isNaN(eNum)) eNum = 0;
+    if (eNum > 10) eNum = Math.min(5, Math.round(eNum/1000)) || 0;
+    eNum = Math.max(0, Math.min(5, eNum));
+    const nome = ((d[cols.musica]||'') + '').toLowerCase();
+    return eNum >= minE && nome.includes(q);
+  });
+  exibirTabela(filtered, cols);
+}
+
+/* --- util --- */
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* --- bootstrap --- */
+let ALL_DATA = [];
+let cols = null;
+(async function init(){
+  try {
+    const result = await carregarDados();
+    const headers = result.headers;
+    const dados = result.dados;
+    ALL_DATA = dados;
+    cols = detectColumns(headers);
+    document.getElementById('detectedHeaders').textContent = 'Colunas detectadas: ' + headers.join(' • ');
+    exibirTabela(ALL_DATA, cols);
+  } catch(err) {
+    document.getElementById('detectedHeaders').textContent = 'Erro ao carregar CSV: ' + err.message;
+    console.error(err);
+  }
+})();
+
+document.getElementById('filtroEstrelas').addEventListener('change', aplicarFiltros);
+document.getElementById('buscaMusica').addEventListener('input', aplicarFiltros);
+</script>
+</body>
+</html>
