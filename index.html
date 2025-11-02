@@ -55,7 +55,7 @@
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?gid=0&single=true&output=csv";
 
-// --- parser CSV robusto ---
+// --- parser CSV robusto (mantém emojis e aspas corretamente) ---
 function parseCSV(text) {
   const rows = [];
   let i = 0, cur = '', row = [], inQuotes = false;
@@ -87,7 +87,11 @@ async function carregarDados() {
   const dados = parsed.slice(1).map(r => {
     const obj = {};
     headers.forEach((h, i) => {
-      obj[h] = (r[i] || "").replace(/[\r\n]+/g, " ").trim();
+      // limpa aspas e quebras, mas mantém emojis
+      obj[h] = (r[i] || "")
+        .replace(/['"]+/g, "")
+        .replace(/\r?\n/g, " ")
+        .trim();
     });
     return obj;
   });
@@ -109,23 +113,16 @@ function exibirTabela(dados, cols) {
   const tbody = document.querySelector("#tabela tbody");
   tbody.innerHTML = "";
   dados.forEach(d => {
-    const eRaw = d[cols.estrelas] || "";
-    let estrelasHTML = "";
-    const num = parseInt(eRaw.replace(/[^\d]/g, ""));
-    if (!isNaN(num) && num > 0 && num <= 5) {
-      estrelasHTML = "💛".repeat(num);
-    } else if (eRaw.includes("⭐") || eRaw.includes("💛")) {
-      estrelasHTML = eRaw; // já tem símbolo
-    } else {
-      estrelasHTML = ""; // vazio
-    }
+    const estrelasRaw = (d[cols.estrelas] || "")
+      .replace(/\s+/g, " ")
+      .trim();
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${d[cols.musica] || ""}</td>
       <td>${d[cols.versao] || ""}</td>
       <td>${d[cols.pontuacao] || ""}</td>
-      <td>${estrelasHTML}</td>
+      <td>${estrelasRaw}</td>
       <td>${d[cols.jogo] || ""}</td>
     `;
     tbody.appendChild(tr);
@@ -136,8 +133,9 @@ function aplicarFiltros() {
   const min = parseInt(document.querySelector("#filtroEstrelas").value);
   const busca = document.querySelector("#buscaMusica").value.toLowerCase();
   const filtrado = ALL.filter(d => {
-    const eRaw = d[cols.estrelas] || "";
-    const num = parseInt(eRaw.replace(/[^\d]/g, "")) || 0;
+    const estrelasRaw = (d[cols.estrelas] || "");
+    const temEstrela = estrelasRaw.match(/[💚🩷🩵💛]/g);
+    const num = temEstrela ? temEstrela.length : 0;
     const nome = (d[cols.musica] || "").toLowerCase();
     return num >= min && nome.includes(busca);
   });
@@ -146,12 +144,14 @@ function aplicarFiltros() {
 
 let ALL = [];
 let cols = null;
+
 (async function init(){
   const { headers, dados } = await carregarDados();
   ALL = dados;
   cols = detectColumns(headers);
   exibirTabela(ALL, cols);
 })();
+
 document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 </script>
