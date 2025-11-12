@@ -4,19 +4,114 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>🎵 Placar Just Dance do Lele 🎵</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: "Poppins", sans-serif; background:#0d0d0d; color:#f4f4f4; margin:0 }
-  header { background:#b30a3c; text-align:center; padding:20px; font-size:1.6rem; font-weight:600; color:#fff; border-radius:0 0 10px 10px; }
-  .container { max-width:980px; margin:30px auto; padding:20px; background:#111; border-radius:10px; box-shadow:0 4px 20px rgba(255,255,255,0.04); overflow-x:auto; }
-  .controls { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px; align-items:center; }
-  label { font-size:0.9rem; color:#ddd }
-  select,input { padding:8px 10px; border-radius:6px; border:1px solid #333; background:#161616; color:#fff }
-  table { width:100%; border-collapse:collapse; margin-top:12px; table-layout:fixed; word-wrap:break-word; }
-  th,td { padding:10px; border-bottom:1px solid #222; text-align:left; vertical-align:middle }
-  th { color:#ff88b3; font-weight:600 }
-  tr:hover { background:#1a1a1a }
-  footer { text-align:center; color:#999; margin-top:16px; font-size:0.9rem }
-  .small { font-size:0.85rem; color:#aaa; margin-left:8px }
+  :root {
+    --cor-fundo: #0c0713;
+    --cor-card: #141024;
+    --roxo: #6d2cff;
+    --verde-lima: #b6ff3b;
+    --texto: #f4f4f4;
+    --texto-sec: #b8b8b8;
+    --borda: #2a2340;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Nunito", sans-serif;
+    background: var(--cor-fundo);
+    color: var(--texto);
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--roxo), #341770);
+    text-align: center;
+    padding: 24px 12px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: var(--cor-card);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .controls {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: flex-end;
+  }
+
+  label {
+    font-size: 0.9rem;
+    color: var(--texto-sec);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  select, input {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--borda);
+    background: #1b152e;
+    color: var(--texto);
+    outline: none;
+    transition: 0.2s;
+    font-size: 0.95rem;
+  }
+
+  select:focus, input:focus {
+    border-color: var(--verde-lima);
+    box-shadow: 0 0 6px var(--verde-lima);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: 14px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  th {
+    color: var(--verde-lima);
+    font-weight: 700;
+    font-size: 1rem;
+    background: #19122d;
+  }
+
+  tr:hover {
+    background: rgba(182,255,59,0.08);
+    transition: 0.2s;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--texto-sec);
+    margin-top: 20px;
+    font-size: 0.9rem;
+  }
+
+  ::placeholder {
+    color: #888;
+  }
 </style>
 </head>
 <body>
@@ -25,16 +120,21 @@
 <div class="container">
   <div class="controls">
     <div>
-      <label>Filtro por estrelas mínimas:</label><br>
-      <select id="filtroEstrelas"><option value="0">Todas</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option><option value="5">5</option></select>
+      <label>Filtro por estrelas mínimas:</label>
+      <select id="filtroEstrelas">
+        <option value="0">Todas</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+        <option value="5">5</option>
+      </select>
     </div>
     <div style="flex:1">
-      <label>Buscar música:</label><br>
+      <label>Buscar música:</label>
       <input id="buscaMusica" type="text" placeholder="Digite o nome..." style="width:100%"/>
     </div>
   </div>
-
-  <div class="small" id="detectedHeaders"></div>
 
   <table id="tabela" aria-live="polite">
     <thead>
@@ -55,7 +155,6 @@
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?gid=0&single=true&output=csv";
 
-// --- parser CSV robusto (mantém emojis e aspas corretamente) ---
 function parseCSV(text) {
   const rows = [];
   let i = 0, cur = '', row = [], inQuotes = false;
@@ -87,7 +186,6 @@ async function carregarDados() {
   const dados = parsed.slice(1).map(r => {
     const obj = {};
     headers.forEach((h, i) => {
-      // limpa aspas e quebras, mas mantém emojis
       obj[h] = (r[i] || "")
         .replace(/['"]+/g, "")
         .replace(/\r?\n/g, " ")
@@ -113,10 +211,7 @@ function exibirTabela(dados, cols) {
   const tbody = document.querySelector("#tabela tbody");
   tbody.innerHTML = "";
   dados.forEach(d => {
-    const estrelasRaw = (d[cols.estrelas] || "")
-      .replace(/\s+/g, " ")
-      .trim();
-
+    const estrelasRaw = (d[cols.estrelas] || "").replace(/\s+/g, " ").trim();
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${d[cols.musica] || ""}</td>
