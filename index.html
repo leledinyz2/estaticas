@@ -379,22 +379,84 @@ function detectColumns(headers){
 }
 
 /* render tabela */
-function exibirTabela(dados, cols){
+function exibirTabela(dados, cols) {
   const tbody = document.querySelector("#tabela tbody");
   tbody.innerHTML = "";
+
+  if (!dados || !Array.isArray(dados)) {
+    console.warn("exibirTabela: 'dados' vazio ou inválido");
+    return;
+  }
+  if (!cols) {
+    console.warn("exibirTabela: 'cols' não definido");
+    return;
+  }
+
+  // helper: escapa texto para evitar injeção de HTML
+  const escapeHTML = (s) => {
+    if (s == null) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  };
+
   dados.forEach(d => {
     const tr = document.createElement("tr");
-    const estrelasRaw = (cols.estrelas ? (d[cols.estrelas] || "") : "").replace(/\s+/g," ").trim();
+
+    const musicaTxt = escapeHTML(d[cols.musica] || "");
+    const versaoTxt = escapeHTML(d[cols.versao] || "");
+    const pontuacaoTxt = escapeHTML(d[cols.pontuacao] || "");
+    const estrelasRaw = escapeHTML(cols.estrelas ? (d[cols.estrelas] || "") : "");
+    const jogoTxt = escapeHTML(d[cols.jogo] || "");
 
     tr.innerHTML = `
-      <td>${d[cols.musica] || ""}</td>
-      <td>${d[cols.versao] || ""}</td>
-      <td>${d[cols.pontuacao] || ""}</td>
-      <td><span class="stars">${formatStars(estrelasRaw)}</span></td>
-      <td>${d[cols.jogo] || ""}</td>
+      <td>${musicaTxt}</td>
+      <td>${versaoTxt}</td>
+      <td>${pontuacaoTxt}</td>
+      <td><span class="stars">${formatStars ? formatStars(estrelasRaw) : (estrelasRaw || "—")}</span></td>
+      <td>${jogoTxt}</td>
     `;
+
+    // tornar a linha clicável: abre Just Dance Wiki em nova aba
+    const musicaNome = (d[cols.musica] || "").trim();
+    if (musicaNome) {
+      // normaliza (remove acentos) e troca espaços por underline
+      const slug = musicaNome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")    // remove diacríticos
+        .replace(/\s+/g, "_")               // espaços -> _
+        .replace(/[^\w\-_.]/g, "");         // remove chars inválidos para URL amigável
+
+      const urlWiki = "https://justdance.fandom.com/wiki/" + encodeURIComponent(slug);
+
+      tr.style.cursor = "pointer";
+      tr.setAttribute("role", "link");
+      tr.setAttribute("aria-label", `Abrir wiki de ${musicaNome}`);
+
+      tr.addEventListener("click", (ev) => {
+        // evita abrir ao clicar em elementos interativos dentro da linha (se houver)
+        const tag = ev.target && ev.target.tagName;
+        if (tag === "A" || tag === "BUTTON" || tag === "INPUT") return;
+        window.open(urlWiki, "_blank");
+      });
+    }
+
     tbody.appendChild(tr);
   });
+
+  // atualizar estatísticas (se existirem as funções)
+  const totalEl = document.getElementById("totalSongs");
+  if (totalEl) totalEl.textContent = dados.length;
+
+  const avgEl = document.getElementById("avgScore");
+  if (avgEl) avgEl.textContent = (typeof calcAvgScore === "function") ? (calcAvgScore(dados, cols) || "—") : "—";
+
+  const topEl = document.getElementById("topStar");
+  if (topEl) topEl.textContent = (typeof highestStar === "function") ? (highestStar(dados, cols) || "—") : "—";
+}
 
   // update stats
   document.getElementById("totalSongs").textContent = dados.length;
