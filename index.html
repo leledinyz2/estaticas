@@ -398,8 +398,27 @@ function exibirTabela(dados, cols){
       <td><span class="stars">${formatStars(estrelasRaw)}</span></td>
       <td>${d[cols.jogo] || ""}</td>
     `;
+
+    // --- novo trecho: abrir wiki ao clicar ---
+    const musicaNome = (d[cols.musica] || "").trim();
+    if (musicaNome) {
+      const urlWiki = "https://justdance.fandom.com/wiki/" + 
+                      encodeURIComponent(musicaNome.replace(/\s+/g, "_"));
+      tr.style.cursor = "pointer";
+      tr.addEventListener("click", () => {
+        window.open(urlWiki, "_blank");
+      });
+    }
+    // ----------------------------------------
+
     tbody.appendChild(tr);
   });
+
+  // atualizar estatísticas
+  document.getElementById("totalSongs").textContent = dados.length;
+  document.getElementById("avgScore").textContent = calcAvgScore(dados, cols) || "—";
+  document.getElementById("topStar").textContent = highestStar(dados, cols) || "—";
+}
 
   // update stats
   document.getElementById("totalSongs").textContent = dados.length;
