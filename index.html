@@ -7,42 +7,49 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cor-fundo: #0c0713;
-    --cor-card: #141024;
     --roxo: #6d2cff;
+    --roxo-translucido: rgba(109, 44, 255, 0.25);
     --verde-lima: #b6ff3b;
     --texto: #f4f4f4;
     --texto-sec: #b8b8b8;
-    --borda: #2a2340;
+    --borda: rgba(255,255,255,0.08);
+    --blur: blur(12px);
   }
 
   * { box-sizing: border-box; }
   body {
     font-family: "Nunito", sans-serif;
-    background: var(--cor-fundo);
+    background: radial-gradient(circle at top left, #0a0613, #100820 60%, #0c0615 100%);
     color: var(--texto);
     margin: 0;
     padding: 0;
+    min-height: 100vh;
   }
 
   header {
-    background: linear-gradient(135deg, var(--roxo), #341770);
+    position: sticky;
+    top: 0;
+    backdrop-filter: var(--blur);
+    background: var(--roxo-translucido);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
     text-align: center;
     padding: 24px 12px;
     font-size: 1.8rem;
     font-weight: 700;
     color: #fff;
     border-radius: 0 0 20px 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.4);
   }
 
   .container {
     max-width: 1000px;
-    margin: 40px auto;
-    background: var(--cor-card);
-    padding: 24px;
+    margin: 50px auto;
+    background: rgba(25, 17, 50, 0.4);
+    border: 1px solid var(--borda);
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    padding: 24px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+    backdrop-filter: blur(20px) saturate(160%);
   }
 
   .controls {
@@ -64,16 +71,17 @@
     padding: 10px 14px;
     border-radius: 10px;
     border: 1px solid var(--borda);
-    background: #1b152e;
+    background: rgba(255,255,255,0.08);
     color: var(--texto);
     outline: none;
     transition: 0.2s;
     font-size: 0.95rem;
+    backdrop-filter: blur(8px);
   }
 
   select:focus, input:focus {
     border-color: var(--verde-lima);
-    box-shadow: 0 0 6px var(--verde-lima);
+    box-shadow: 0 0 8px var(--verde-lima);
   }
 
   table {
@@ -87,30 +95,31 @@
   th, td {
     padding: 14px 10px;
     text-align: left;
-    border-bottom: 1px solid var(--borda);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
   }
 
   th {
     color: var(--verde-lima);
     font-weight: 700;
     font-size: 1rem;
-    background: #19122d;
+    background: rgba(109,44,255,0.12);
+    backdrop-filter: blur(8px);
   }
 
   tr:hover {
     background: rgba(182,255,59,0.08);
-    transition: 0.2s;
+    transition: 0.25s;
   }
 
   footer {
     text-align: center;
     color: var(--texto-sec);
-    margin-top: 20px;
+    margin-top: 24px;
     font-size: 0.9rem;
   }
 
   ::placeholder {
-    color: #888;
+    color: #999;
   }
 </style>
 </head>
