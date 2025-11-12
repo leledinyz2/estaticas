@@ -315,66 +315,54 @@
   </div>
 
 <script>
-/* ========== CONFIG ========== */
-/* cole aqui o link CSV da sua planilha (pública) */
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTas34kcpM1cQdW2oR_XjNlINTVShbwfTyVdYnBe2glvdvlJbcDlbQ0npgTdJZ_6p-tQgozmHmnsCQy/pub?gid=0&single=true&output=csv";
 
-/* parse CSV robusto */
-function parseCSV(text){
-  const rows=[];
-  let i=0, cur='', row=[], inQuotes=false;
-  while(i<text.length){
-    const ch=text[i];
-    if(inQuotes){
-      if(ch === '"'){
-        if(text[i+1] === '"'){ cur += '"'; i += 2; continue; }
+function parseCSV(text) {
+  const rows = [];
+  let i = 0, cur = '', row = [], inQuotes = false;
+  while (i < text.length) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { cur += '"'; i += 2; continue; }
         inQuotes = false; i++; continue;
       } else { cur += ch; i++; continue; }
     } else {
-      if(ch === '"'){ inQuotes=true; i++; continue; }
-      if(ch === ','){ row.push(cur); cur=''; i++; continue; }
-      if(ch === '\r'){ i++; continue; }
-      if(ch === '\n'){ row.push(cur); rows.push(row); row=[]; cur=''; i++; continue; }
+      if (ch === '"') { inQuotes = true; i++; continue; }
+      if (ch === ',') { row.push(cur); cur = ''; i++; continue; }
+      if (ch === '\r') { i++; continue; }
+      if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; i++; continue; }
       cur += ch; i++;
     }
   }
-  if(cur !== '' || row.length) row.push(cur);
-  if(row.length) rows.push(row);
+  if (cur !== '' || row.length) row.push(cur);
+  if (row.length) rows.push(row);
   return rows;
 }
 
-/* carregar dados */
-async function carregarDados(){
-  try{
-    const r = await fetch(CSV_URL, {cache: "no-store"});
-    if(!r.ok) throw new Error("Erro ao buscar CSV");
-    const txt = await r.text();
-    const parsed = parseCSV(txt);
-    if(!parsed || parsed.length < 2) return {headers:[], dados:[]};
-    const headers = parsed[0].map(h => (h||'').trim());
-    const dados = parsed.slice(1).map(r => {
-      const obj = {};
-      headers.forEach((h,i) => {
-        obj[h] = (r[i] || "").replace(/['"]+/g, "").replace(/\r?\n/g, " ").trim();
-      });
-      return obj;
+async function carregarDados() {
+  const res = await fetch(CSV_URL);
+  const text = await res.text();
+  const parsed = parseCSV(text);
+  const headers = parsed[0].map(h => h.trim());
+  const dados = parsed.slice(1).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = (r[i] || "").replace(/['"]+/g, "").replace(/\r?\n/g, " ").trim();
     });
-    return {headers, dados};
-  }catch(err){
-    console.error(err);
-    return {headers:[], dados:[]};
-  }
+    return obj;
+  });
+  return { headers, dados };
 }
 
-/* detecta colunas relevantes (tenta achar variações em pt/en) */
-function detectColumns(headers){
+function detectColumns(headers) {
   const find = (names) => headers.find(h => names.some(n => h.toLowerCase().includes(n))) || null;
   return {
-    musica: find(["música","musica","song"]) || headers[0] || "Música",
-    versao: find(["versão","versao","version"]) || headers[1] || "Versão",
-    pontuacao: find(["pontuação","pontuacao","score","pontuacoes","pontuação"]) || headers[2] || "Pontuação",
-    estrelas: find(["estrela","estrelas","stars"]) || null,
-    jogo: find(["jogo","game"]) || headers[headers.length-1] || "Jogo",
+    musica: find(["música", "musica", "song"]) || headers[0],
+    versao: find(["versão", "versao", "version"]) || headers[1],
+    pontuacao: find(["pontuação", "pontuacao", "score"]) || headers[2],
+    estrelas: find(["estrela", "estrelas", "stars"]) || null,
+    jogo: find(["jogo", "game"]) || headers[headers.length - 1],
   };
 }
 
@@ -383,165 +371,64 @@ function exibirTabela(dados, cols) {
   const tbody = document.querySelector("#tabela tbody");
   tbody.innerHTML = "";
 
-  if (!dados || !Array.isArray(dados)) {
-    console.warn("exibirTabela: 'dados' vazio ou inválido");
-    return;
-  }
-  if (!cols) {
-    console.warn("exibirTabela: 'cols' não definido");
-    return;
-  }
-
-  // helper: escapa texto para evitar injeção de HTML
-  const escapeHTML = (s) => {
-    if (s == null) return "";
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  };
-
   dados.forEach(d => {
     const tr = document.createElement("tr");
-
-    const musicaTxt = escapeHTML(d[cols.musica] || "");
-    const versaoTxt = escapeHTML(d[cols.versao] || "");
-    const pontuacaoTxt = escapeHTML(d[cols.pontuacao] || "");
-    const estrelasRaw = escapeHTML(cols.estrelas ? (d[cols.estrelas] || "") : "");
-    const jogoTxt = escapeHTML(d[cols.jogo] || "");
+    const estrelasRaw = (cols.estrelas ? (d[cols.estrelas] || "") : "").replace(/\s+/g, " ").trim();
 
     tr.innerHTML = `
-      <td>${musicaTxt}</td>
-      <td>${versaoTxt}</td>
-      <td>${pontuacaoTxt}</td>
-      <td><span class="stars">${formatStars ? formatStars(estrelasRaw) : (estrelasRaw || "—")}</span></td>
-      <td>${jogoTxt}</td>
+      <td>${d[cols.musica] || ""}</td>
+      <td>${d[cols.versao] || ""}</td>
+      <td>${d[cols.pontuacao] || ""}</td>
+      <td>${estrelasRaw}</td>
+      <td>${d[cols.jogo] || ""}</td>
     `;
 
-    // tornar a linha clicável: abre Just Dance Wiki em nova aba
+    // clique abre a wiki em nova aba
     const musicaNome = (d[cols.musica] || "").trim();
     if (musicaNome) {
-      // normaliza (remove acentos) e troca espaços por underline
       const slug = musicaNome
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")    // remove diacríticos
-        .replace(/\s+/g, "_")               // espaços -> _
-        .replace(/[^\w\-_.]/g, "");         // remove chars inválidos para URL amigável
-
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "_")
+        .replace(/[^\w\-_.]/g, "");
       const urlWiki = "https://justdance.fandom.com/wiki/" + encodeURIComponent(slug);
 
       tr.style.cursor = "pointer";
-      tr.setAttribute("role", "link");
-      tr.setAttribute("aria-label", `Abrir wiki de ${musicaNome}`);
-
-      tr.addEventListener("click", (ev) => {
-        // evita abrir ao clicar em elementos interativos dentro da linha (se houver)
-        const tag = ev.target && ev.target.tagName;
-        if (tag === "A" || tag === "BUTTON" || tag === "INPUT") return;
+      tr.addEventListener("click", () => {
         window.open(urlWiki, "_blank");
       });
     }
 
     tbody.appendChild(tr);
   });
-  }
-
-  // atualizar estatísticas (se existirem as funções)
-  const totalEl = document.getElementById("totalSongs");
-  if (totalEl) totalEl.textContent = dados.length;
-
-  const avgEl = document.getElementById("avgScore");
-  if (avgEl) avgEl.textContent = (typeof calcAvgScore === "function") ? (calcAvgScore(dados, cols) || "—") : "—";
-
-  const topEl = document.getElementById("topStar");
-  if (topEl) topEl.textContent = (typeof highestStar === "function") ? (highestStar(dados, cols) || "—") : "—";
 }
 
-  // update stats
-  document.getElementById("totalSongs").textContent = dados.length;
-  document.getElementById("avgScore").textContent = calcAvgScore(dados, cols) || "—";
-  document.getElementById("topStar").textContent = highestStar(dados, cols) || "—";
-}
-
-function formatStars(raw){
-  if(!raw) return "<span style='opacity:.45'>—</span>";
-  // keep any emoji-like stars; fallback to numeric
-  const emojis = raw.match(/[\u2600-\u26FF\u2700-\u27BF\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}]/gu);
-  if(emojis && emojis.length) return emojis.join(" ");
-  return raw;
-}
-
-function calcAvgScore(dados, cols){
-  if(!cols.pontuacao) return null;
-  const nums = dados.map(d => parseFloat((d[cols.pontuacao] || "").replace(/[^\d.,]/g,"").replace(",", "."))).filter(n=>!isNaN(n));
-  if(!nums.length) return null;
-  const avg = nums.reduce((a,b)=>a+b,0)/nums.length;
-  return Math.round(avg);
-}
-
-function highestStar(dados, cols){
-  if(!cols.estrelas) return null;
-  let best = 0;
-  dados.forEach(d=>{
-    const s = (d[cols.estrelas]||"").match(/[\u2600-\u26FF\u2700-\u27BF\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}]/gu);
-    const n = s ? s.length : (parseInt((d[cols.estrelas]||"").replace(/\D/g,"")) || 0);
-    if(n>best) best=n;
-  });
-  return best ? ( "★".repeat(best) ) : null;
-}
-
-/* filtros */
-function aplicarFiltros(){
-  const min = parseInt(document.getElementById("filtroEstrelas").value) || 0;
-  const busca = (document.getElementById("buscaMusica").value || "").toLowerCase();
+/* filtro */
+function aplicarFiltros() {
+  const min = parseInt(document.querySelector("#filtroEstrelas").value);
+  const busca = document.querySelector("#buscaMusica").value.toLowerCase();
   const filtrado = ALL.filter(d => {
-    const nome = ((d[cols.musica] || "")).toLowerCase();
-    const estrelasRaw = (cols.estrelas ? (d[cols.estrelas] || "") : "");
-    const emojis = estrelasRaw.match(/[\u2600-\u26FF\u2700-\u27BF\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}]/gu);
-    const num = emojis ? emojis.length : (parseInt(starsToNumber(estrelasRaw)) || 0);
+    const estrelasRaw = (d[cols.estrelas] || "");
+    const temEstrela = estrelasRaw.match(/[💚🩷🩵💛]/g);
+    const num = temEstrela ? temEstrela.length : 0;
+    const nome = (d[cols.musica] || "").toLowerCase();
     return num >= min && nome.includes(busca);
   });
   exibirTabela(filtrado, cols);
 }
 
-function starsToNumber(s){
-  if(!s) return 0;
-  const n = parseInt(s.replace(/\D/g,""));
-  return isNaN(n) ? 0 : n;
-}
-
-/* init */
 let ALL = [];
 let cols = null;
 
-async function init(){
-  const res = await carregarDados();
-  if(!res || !res.headers) {
-    console.warn("Nenhum dado encontrado.");
-    return;
-  }
-  cols = detectColumns(res.headers);
-  ALL = res.dados;
+(async function init() {
+  const { headers, dados } = await carregarDados();
+  ALL = dados;
+  cols = detectColumns(headers);
   exibirTabela(ALL, cols);
-}
+})();
 
-/* refresh button */
-document.getElementById("refreshBtn").addEventListener("click", async ()=>{
-  document.getElementById("refreshBtn").textContent = "Atualizando...";
-  await init();
-  aplicarFiltros();
-  setTimeout(()=>document.getElementById("refreshBtn").textContent = "Atualizar",400);
-});
-
-/* attach filters */
-document.getElementById("filtroEstrelas").addEventListener("change", aplicarFiltros);
-document.getElementById("buscaMusica").addEventListener("input", aplicarFiltros);
-
-/* auto init on load */
-init();
-
+document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
+document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 </script>
 </body>
 </html>
