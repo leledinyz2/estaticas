@@ -254,7 +254,7 @@
             </div>
             <div class="stat">
               <strong id="avgScore">—</strong>
-              <small>Média de pontuação</small>
+              <small>Melhor Pontuação</small>
             </div>
             <div class="stat">
               <strong id="topStar">—</strong>
@@ -413,15 +413,15 @@ function exibirTabela(dados, cols) {
   });
 }
 
-function calcAvgScore(dados, cols) {
+function highestScore(dados, cols) {
   if (!cols.pontuacao) return null;
   const numeros = dados.map(d => {
     const valor = (d[cols.pontuacao] || "").replace(/[^\d.,]/g, "").replace(",", ".");
     return parseFloat(valor);
   }).filter(v => !isNaN(v));
   if (!numeros.length) return null;
-  const media = numeros.reduce((a, b) => a + b, 0) / numeros.length;
-  return Math.round(media);
+  const max = Math.max(...numeros);
+  return Math.round(max);
 }
 
 function highestStar(dados, cols) {
@@ -432,7 +432,7 @@ function highestStar(dados, cols) {
     const n = s ? s.length : parseInt((d[cols.estrelas] || "").replace(/\D/g, "")) || 0;
     if (n > max) max = n;
   });
-  return max ? "★".repeat(max) : "—";
+  return max ? "★".repeat(Math.min(max, 5)) : "—";
 }
 
 
