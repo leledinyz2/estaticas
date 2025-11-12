@@ -458,11 +458,6 @@ let cols = null;
   ALL = dados;
   cols = detectColumns(headers);
   exibirTabela(ALL, cols);
-  (async function init() {
-  const { headers, dados } = await carregarDados();
-  ALL = dados;
-  cols = detectColumns(headers);
-  exibirTabela(ALL, cols);
 
   // 🔽 Atualiza os cards de estatísticas
   document.getElementById("totalSongs").textContent = ALL.length;
@@ -470,6 +465,7 @@ let cols = null;
   document.getElementById("topStar").textContent = highestStar(ALL, cols) || "—";
 })();
 
+// 🔁 Filtros reativos
 document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 </script>
