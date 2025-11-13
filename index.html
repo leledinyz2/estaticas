@@ -461,7 +461,7 @@ let cols = null;
 
   // 🔽 Atualiza os cards de estatísticas
   document.getElementById("totalSongs").textContent = ALL.length;
-  document.getElementById("avgScore").textContent = calcAvgScore(ALL, cols) || "—";
+  document.getElementById("avgScore").textContent = highestScore(ALL, cols) || "—";
   document.getElementById("topStar").textContent = highestStar(ALL, cols) || "—";
 })();
 
