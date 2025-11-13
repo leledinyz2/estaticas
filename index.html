@@ -8,19 +8,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-  :root{
-    --bg-deep: #44386b;     /* roxo escuro base (inspirado na imagem) */
-    --bg-mid: #584b84;
-    --glass: rgba(255,255,255,0.04);
-    --glass-2: rgba(255,255,255,0.06);
-    --accent-lime: #bfff3b; /* verde-lima */
-    --accent-soft: rgba(191,255,59,0.12);
-    --card: rgba(12,8,20,0.6);
-    --text: #eef0f6;
-    --muted: #cfcfe0;
-    --shadow-dark: rgba(10,7,20,0.7);
-    --neum-inset: rgba(0,0,0,0.45);
-  }
+  :root {
+  --bg-deep: #44386b;    /* fundo principal */
+  --bg-mid: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%);     /* gradiente secundário */
+  --bg-low: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%);     /* fundo mais escuro */
+  --glass: rgba(255,255,255,0.04);
+  --glass-2: rgba(255,255,255,0.06);
+  --accent-lime: #bfff3b;
+  --accent-soft: rgba(191,255,59,0.12);
+  --card: rgba(12,8,20,0.6);
+  --text: #eef0f6;
+  --muted: #cfcfe0;
+  --shadow-dark: rgba(10,7,20,0.7);
+  --neum-inset: rgba(0,0,0,0.45);
+}
 
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -29,7 +30,7 @@
     font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     background:
       radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent 8%),
-      linear-gradient(180deg, var(--bg-deep) 0%, #3b3160 30%, #2f2547 100%);
+      linear-gradient(180deg, var(--bg-deep) 0%, linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%) 30%, linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%) 100%);
     color:var(--text);
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
@@ -220,7 +221,7 @@
   min-height: 100vh;
   background:
     radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent 8%),
-    linear-gradient(180deg, #44386b 0%, #3b3160 30%, #2f2547 100%) fixed;
+    linear-gradient(180deg, #44386b 0%, linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%) 30%, linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%) 100%) fixed;
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
@@ -481,53 +482,61 @@ document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFilt
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 
 // 🎨 Temas disponíveis — cada um com cor principal e fundo escuro próprio
+// 🎨 Temas — agora mudam toda a base roxa da interface
 const temas = {
   verde: {
     cor: "#BFFF3B",
-    fundo: "#381929"
+    fundo1: "#381929",
+    fundo2: "#2C1120",
+    fundo3: "#1A0A12"
   },
   roxo: {
     cor: "#B43CE4",
-    fundo: "#33270B"
+    fundo1: "#33270B",
+    fundo2: "#261C08",
+    fundo3: "#180F04"
   },
   azul: {
     cor: "#5842E7",
-    fundo: "#451308"
+    fundo1: "#451308",
+    fundo2: "#2E0D06",
+    fundo3: "#180704"
   },
   vermelho: {
     cor: "#E84343",
-    fundo: "#1F2F08"
+    fundo1: "#1F2F08",
+    fundo2: "#121D05",
+    fundo3: "#0A1003"
   },
   amarelo: {
     cor: "#FFD500",
-    fundo: "#2F103B"
+    fundo1: "#2F103B",
+    fundo2: "#1E0A26",
+    fundo3: "#100514"
   }
 };
 
-// Função pra aplicar o tema escolhido
 function aplicarTema(nome) {
   const tema = temas[nome] || temas.verde;
   document.documentElement.style.setProperty("--accent-lime", tema.cor);
-  document.documentElement.style.setProperty("--bg-deep", tema.fundo);
+  document.documentElement.style.setProperty("--bg-deep", tema.fundo1);
+  document.documentElement.style.setProperty("--bg-mid", tema.fundo2);
+  document.documentElement.style.setProperty("--bg-low", tema.fundo3);
 
-  // Atualiza o gradiente de fundo pra refletir a nova base
   document.body.style.background = `
     radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent 8%),
-    linear-gradient(180deg, ${tema.fundo} 0%, #3b3160 30%, #2f2547 100%)
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%)
   `;
 
-  // Atualiza o seletor pra combinar
   const select = document.getElementById("themeSelect");
   select.style.color = tema.cor;
   select.style.borderColor = tema.cor;
 }
 
-// Evento: muda tema ao selecionar no menu
 document.getElementById("themeSelect").addEventListener("change", (e) => {
   aplicarTema(e.target.value);
 });
 
-// Aplica o tema inicial
 aplicarTema("verde");
 </script>
 </body>
