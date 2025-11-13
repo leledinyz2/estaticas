@@ -236,6 +236,7 @@
         <div class="title-area">
           <h1>🎵 Placar Just Dance do Lele 🎵</h1>
           <p>Registra suas melhores pontuações — atualizado automaticamente</p>
+          <button id="themeToggle" class="pill">Mudar tema</button>
         </div>
       </div>
     </header>
@@ -246,7 +247,6 @@
         <div class="hero-text">
           <h2>Placar & Destaques</h2>
           <p>Lista completa de músicas, versões e suas pontuações. Use os filtros para encontrar músicas por nome ou por quantidade de estrelas.</p>
-          <button id="themeToggle" class="pill">Mudar tema</button>
 
           <div class="stat-block">
             <div class="stat">
@@ -470,26 +470,32 @@ let cols = null;
 document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 
-  const temas = {
-  roxo: {
-    "--bg-deep": "#44386b",
-    "--accent-lime": "#bfff3b",
-  },
-  neon: {
-    "--bg-deep": "#191a3e",
-    "--accent-lime": "#ff66cc",
-  }
-};
+// 🎨 Temas disponíveis (mantém o mesmo fundo, só muda a cor principal)
+const temas = [
+  { nome: "verde", cor: "#BFFF3B" },
+  { nome: "roxo", cor: "#B43CE4" },
+  { nome: "azul", cor: "#5842E7" },
+  { nome: "vermelho", cor: "#E84343" },
+  { nome: "amarelo", cor: "#FFD500" }
+];
 
-let temaAtual = "roxo";
+let indiceTema = 0;
 
+// Função pra aplicar o tema atual
+function aplicarTema() {
+  const tema = temas[indiceTema];
+  document.documentElement.style.setProperty("--accent-lime", tema.cor);
+  document.getElementById("themeToggle").textContent = `Tema: ${tema.nome}`;
+}
+
+// Botão pra alternar entre os temas
 document.getElementById("themeToggle").addEventListener("click", () => {
-  temaAtual = temaAtual === "roxo" ? "neon" : "roxo";
-  const vars = temas[temaAtual];
-  for (const key in vars) {
-    document.documentElement.style.setProperty(key, vars[key]);
-  }
+  indiceTema = (indiceTema + 1) % temas.length;
+  aplicarTema();
 });
+
+// Aplica o tema inicial
+aplicarTema();
 </script>
 </body>
 </html>
