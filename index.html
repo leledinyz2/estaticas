@@ -220,11 +220,7 @@
     .header-actions{flex-wrap:wrap}
     .logo-circle{width:48px;height:48px}
   }
-
-  html, body {
-  background: none;
-}
-
+  
   body {
   background: var(--bg-deep);
 }
@@ -533,10 +529,7 @@ function aplicarTema(nome) {
   document.documentElement.style.setProperty("--bg-mid", tema.fundo2);
   document.documentElement.style.setProperty("--bg-low", tema.fundo3);
 
-  document.body.style.background = `
-    radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent 8%),
-    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 30%, var(--bg-low) 100%)
-  `;
+  document.body.style.background = `var(--bg-deep)`;
 
   const select = document.getElementById("themeSelect");
   select.style.color = tema.cor;
