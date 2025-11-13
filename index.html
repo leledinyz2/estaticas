@@ -246,6 +246,7 @@
         <div class="hero-text">
           <h2>Placar & Destaques</h2>
           <p>Lista completa de músicas, versões e suas pontuações. Use os filtros para encontrar músicas por nome ou por quantidade de estrelas.</p>
+          <button id="themeToggle" class="pill">Mudar tema</button>
 
           <div class="stat-block">
             <div class="stat">
@@ -468,6 +469,27 @@ let cols = null;
 // 🔁 Filtros reativos
 document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
+
+  const temas = {
+  roxo: {
+    "--bg-deep": "#44386b",
+    "--accent-lime": "#bfff3b",
+  },
+  neon: {
+    "--bg-deep": "#191a3e",
+    "--accent-lime": "#ff66cc",
+  }
+};
+
+let temaAtual = "roxo";
+
+document.getElementById("themeToggle").addEventListener("click", () => {
+  temaAtual = temaAtual === "roxo" ? "neon" : "roxo";
+  const vars = temas[temaAtual];
+  for (const key in vars) {
+    document.documentElement.style.setProperty(key, vars[key]);
+  }
+});
 </script>
 </body>
 </html>
