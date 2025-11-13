@@ -275,6 +275,8 @@ header.main-header {
     <option value="azul">🔵 Azul</option>
     <option value="vermelho">🔴 Vermelho</option>
     <option value="amarelo">🟡 Amarelo</option>
+    <option value="azulFuturista">🔷 Azul Futurista</option>
+    <option value="code">💻 Code (Hacker)</option>
   </select>
 </div>
       </div>
@@ -510,7 +512,6 @@ document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFilt
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 
 // 🎨 Temas disponíveis — cada um com cor principal e fundo escuro próprio
-// 🎨 Temas — agora mudam toda a base roxa da interface
 const temas = {
   verde: {
     cor: "#BFFF3B",
@@ -519,28 +520,40 @@ const temas = {
     fundo3: "#1A0A12"
   },
   roxo: {
-    cor: "#B43CE4",
-    fundo1: "#33270B",
-    fundo2: "#261C08",
-    fundo3: "#180F04"
-  },
+  cor: "#C39BFF",         // roxo pastel
+  fundo1: "#183033",      // verde-azulado escuro
+  fundo2: "#122326",
+  fundo3: "#0C1719"
+},
   azul: {
-    cor: "#5842E7",
-    fundo1: "#451308",
-    fundo2: "#2E0D06",
-    fundo3: "#180704"
-  },
+  cor: "#47B8FF",         // azul ciano
+  fundo1: "#361D14",      // laranja queimado
+  fundo2: "#2A150E",
+  fundo3: "#1A0D09"
+},
   vermelho: {
-    cor: "#E84343",
-    fundo1: "#1F2F08",
-    fundo2: "#121D05",
-    fundo3: "#0A1003"
-  },
+  cor: "#FF6F91",         // rosa avermelhado
+  fundo1: "#0E193B",      // azul escuro
+  fundo2: "#0A132A",
+  fundo3: "#050A1A"
+},
   amarelo: {
     cor: "#FFD500",
     fundo1: "#2F103B",
     fundo2: "#1E0A26",
     fundo3: "#100514"
+  },
+    azulFuturista: {
+    cor: "#00E0FF",
+    fundo1: "#071B2C",
+    fundo2: "#051421",
+    fundo3: "#020B13"
+  },
+  code: {
+    cor: "#00FF88",
+    fundo1: "#0A1B12",
+    fundo2: "#06140E",
+    fundo3: "#030B07"
   }
 };
 
