@@ -34,6 +34,7 @@
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
     padding:28px;
+    transition: background 0.8s ease, color 0.3s ease;
   }
 
   /* page wrapper */
@@ -470,32 +471,55 @@ let cols = null;
 document.querySelector("#filtroEstrelas").addEventListener("change", aplicarFiltros);
 document.querySelector("#buscaMusica").addEventListener("input", aplicarFiltros);
 
-// 🎨 Temas disponíveis (mantém o mesmo fundo, só muda a cor principal)
-const temas = [
-  { nome: "Verde", cor: "#20E44D" },
-  { nome: "Roxo", cor: "#B43CE4" },
-  { nome: "Azul", cor: "#5842E7" },
-  { nome: "Vermelho", cor: "#E84343" },
-  { nome: "Amarelo", cor: "#FFD500" }
-];
+// 🎨 Temas disponíveis — cada um com cor principal e fundo escuro próprio
+const temas = {
+  verde: {
+    cor: "#BFFF3B",
+    fundo: "#381929"
+  },
+  roxo: {
+    cor: "#B43CE4",
+    fundo: "#33270B"
+  },
+  azul: {
+    cor: "#5842E7",
+    fundo: "#451308"
+  },
+  vermelho: {
+    cor: "#E84343",
+    fundo: "#1F2F08"
+  },
+  amarelo: {
+    cor: "#FFD500",
+    fundo: "#2F103B"
+  }
+};
 
-let indiceTema = 4;
-
-// Função pra aplicar o tema atual
-function aplicarTema() {
-  const tema = temas[indiceTema];
+// Função pra aplicar o tema escolhido
+function aplicarTema(nome) {
+  const tema = temas[nome] || temas.verde;
   document.documentElement.style.setProperty("--accent-lime", tema.cor);
-  document.getElementById("themeToggle").textContent = `Tema: ${tema.nome}`;
+  document.documentElement.style.setProperty("--bg-deep", tema.fundo);
+
+  // Atualiza o gradiente de fundo pra refletir a nova base
+  document.body.style.background = `
+    radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent 8%),
+    linear-gradient(180deg, ${tema.fundo} 0%, #3b3160 30%, #2f2547 100%)
+  `;
+
+  // Atualiza o seletor pra combinar
+  const select = document.getElementById("themeSelect");
+  select.style.color = tema.cor;
+  select.style.borderColor = tema.cor;
 }
 
-// Botão pra alternar entre os temas
-document.getElementById("themeToggle").addEventListener("click", () => {
-  indiceTema = (indiceTema + 1) % temas.length;
-  aplicarTema();
+// Evento: muda tema ao selecionar no menu
+document.getElementById("themeSelect").addEventListener("change", (e) => {
+  aplicarTema(e.target.value);
 });
 
 // Aplica o tema inicial
-aplicarTema();
+aplicarTema("verde");
 </script>
 </body>
 </html>
